@@ -179,6 +179,8 @@ I am happy to help you out!
 Trifiro', A. Klein, J. Vosmera and X. Zhao.
 
 '''
+from __future__ import print_function # compatibility across python 2 & 3
+
 
 __author__ = "Davide Gerosa"
 __email__ = "dgerosa@caltech.edu"
@@ -195,8 +197,8 @@ __doc__="**Author** "+__author__+"\n\n"+\
         __doc__
 
 def why():
-    print "\nIt's all about python and gravity. Go to"
-    print "http://imgs.xkcd.com/comics/python.png\n"
+    print("\nIt's all about python and gravity. Go to")
+    print("http://imgs.xkcd.com/comics/python.png\n")
     sys.exit()
 
 
@@ -204,6 +206,7 @@ def why():
 ########### STARTUP ############
 ################################
 
+from io import open
 import os, sys, imp
 import numpy as np
 import scipy as sp
@@ -213,6 +216,7 @@ import random
 import math
 import parmap # if you don't have parmap, try "pip install parmap".
 import __main__
+
 
 ##Unbuffereb stdout. Less efficient but interesting for debugging.
 if False:
@@ -246,7 +250,7 @@ def make_temp():
     '''
 
     global storedir
-    print "[make_temp] Creating temp directory: "+storedir
+    print("[make_temp] Creating temp directory: "+storedir)
     os.system("mkdir -p "+storedir)
 
 
@@ -261,7 +265,7 @@ def empty_temp():
     '''
 
     global storedir
-    print "[empty_temp] Removing temp files from directory: "+storedir
+    print("[empty_temp] Removing temp files from directory: "+storedir)
     os.system("rm -rf "+storedir)
 #empty_temp(storedir)
 
@@ -369,16 +373,16 @@ def J_lim(q,S1,S2,r, verbose=False):
     Jmax=L+S1+S2
 
     if verbose:
-        print "[J_lim] L=",L, " S1=",S1," S2=",S2
-        print "[J_lim] Jmin=",Jmin, " Jmax=",Jmax
+        print("[J_lim] L=",L, " S1=",S1," S2=",S2)
+        print("[J_lim] Jmin=",Jmin, " Jmax=",Jmax)
         if Jmin==1e-20:
-            print "[J_lim] Jmin=0, Jmax=L+S1+S2"
+            print("[J_lim] Jmin=0, Jmax=L+S1+S2")
         elif Jmin==L-S1-S2:
-            print "[J_lim] Jmin=L-S1-S2, Jmax=L+S1+S2"
+            print("[J_lim] Jmin=L-S1-S2, Jmax=L+S1+S2")
         if Jmin==S1-L-S2:
-            print "[J_lim] Jmin=S1-L-S2, Jmax=L+S1+S2"
+            print("[J_lim] Jmin=S1-L-S2, Jmax=L+S1+S2")
         if Jmin==S2-L-S1:
-            print "[J_lim] Jmin=S2-L-S1, Jmax=L+S1+S2"
+            print("[J_lim] Jmin=S2-L-S1, Jmax=L+S1+S2")
 
     return Jmin,Jmax
 
@@ -412,16 +416,16 @@ def St_limits(J,q,S1,S2,r,verbose=False):
     St_min=float(max(np.abs(J-L),np.abs(S1-S2)))
     St_max=min(J+L,S1+S2)
     if verbose:
-        print "[S_lim] L=",L, " J",J, " S1=",S1," S2=",S2
-        print "[S_lim] St_min=",St_min, " St_max=",St_max
+        print("[S_lim] L=",L, " J",J, " S1=",S1," S2=",S2)
+        print("[S_lim] St_min=",St_min, " St_max=",St_max)
         if St_min==np.abs(J-L) and St_max==J+L:
-            print "[S_lim] St_min=|J-L|, St_max=J+L"
+            print("[S_lim] St_min=|J-L|, St_max=J+L")
         elif St_min==np.abs(J-L) and St_max==S1+S2:
-            print "[S_lim] St_min=|J-L|, St_max=S1+S2"
+            print("[S_lim] St_min=|J-L|, St_max=S1+S2")
         elif St_min==np.abs(S1-S2) and St_max==J+L:
-            print "[S_lim] St_min=|S1-S2|, St_max=J+L"
+            print("[S_lim] St_min=|S1-S2|, St_max=J+L")
         elif St_min==np.abs(S1-S2) and St_max==S1+S2:
-            print "[S_lim] St_min=|S1-S2|, St_max=S1+S2"
+            print("[S_lim] St_min=|S1-S2|, St_max=S1+S2")
 
     return St_min+ttol,St_max-ttol
 
@@ -894,7 +898,7 @@ def Sb_limits(xi,J,q,S1,S2,r):
 
     St_min,St_max=St_limits(J,q,S1,S2,r)
     if St_max<St_min:
-        print "[Sb_limits] Problem in the absolute limits at r="+str(r)+". Assume Sb_min=Sb_max=mean(St_min,St_max)"
+        print("[Sb_limits] Problem in the absolute limits at r="+str(r)+". Assume Sb_min=Sb_max=mean(St_min,St_max)")
         return np.mean([St_min,St_max]), np.mean([St_min,St_max])
 
     if q==1: # if q=1 the effective potential loop shrinks to a lime (Sb_min=Sb_max) and the equations xi_/pm(S)=xi can be solved analytically.
@@ -912,15 +916,15 @@ def Sb_limits(xi,J,q,S1,S2,r):
     # Both roots on xi_plus. Split the interval first
     if xi > xi_low and xi > xi_up:
         if whereareyou:
-            print "[Sb_limits] Both roots on xi_plus"
+            print("[Sb_limits] Both roots on xi_plus")
 
         resmax= sp.optimize.fminbound(lambda S: -1.*xi_plus(S,J,q,S1,S2,r), St_min, St_max,full_output=1)
         S_up=resmax[0]
         xi_max=-1.*resmax[1]
 
         if xi_max<xi: #Braket failed!
-            print "[Sb_limits] Braket failed on xi_plus at r="+str(r)+". Assume Sb_min=Sb_max"
-            #print  xi_plus(S_up,J,q,S1,S2,r), xi
+            print("[Sb_limits] Braket failed on xi_plus at r="+str(r)+". Assume Sb_min=Sb_max")
+            #print( xi_plus(S_up,J,q,S1,S2,r), xi
             Sb_min=S_up
             Sb_max=S_up
         else: #Braket succeeded!
@@ -930,14 +934,14 @@ def Sb_limits(xi,J,q,S1,S2,r):
     # Both roots on xi_minus. Split the interval first
     elif xi < xi_low and xi < xi_up:
         if whereareyou:
-            print "[Sb_limits] Both roots on xi_minus"
+            print("[Sb_limits] Both roots on xi_minus")
 
         resmin= sp.optimize.fminbound(lambda S: xi_minus(S,J,q,S1,S2,r), St_min, St_max,full_output=1)
         S_low=resmin[0]
         xi_min=resmin[1]
 
         if xi_min>xi: #Braket failed!
-            print "[Sb_limits] Braket failed on xi_minus at r="+str(r)+". Assume Sb_min=Sb_max"
+            print("[Sb_limits] Braket failed on xi_minus at r="+str(r)+". Assume Sb_min=Sb_max")
             Sb_min=S_low
             Sb_max=S_low
         else: #Braket succeeded!
@@ -947,28 +951,28 @@ def Sb_limits(xi,J,q,S1,S2,r):
     # One root on xi_plus and the other one on xi_plus. No additional maximization is neeeded
     elif xi >= xi_low and xi <= xi_up:
         if whereareyou:
-            print "[Sb_limits] Sb_min on xi_plus, Sb_max on xi_minus"
+            print("[Sb_limits] Sb_min on xi_plus, Sb_max on xi_minus")
 
         Sb_min= sp.optimize.brentq(lambda S: xi_plus(S,J,q,S1,S2,r)-xi, St_min, St_max)
         Sb_max= sp.optimize.brentq(lambda S: xi_minus(S,J,q,S1,S2,r)-xi, St_min, St_max)
 
     elif xi <= xi_low and xi >= xi_up:
         if whereareyou:
-            print "[Sb_limits] Sb_min on xi_minus, Sb_max on xi_plus"
+            print("[Sb_limits] Sb_min on xi_minus, Sb_max on xi_plus")
 
         Sb_min= sp.optimize.brentq(lambda S: xi_minus(S,J,q,S1,S2,r)-xi, St_min, St_max)
         Sb_max= sp.optimize.brentq(lambda S: xi_plus(S,J,q,S1,S2,r)-xi, St_min, St_max)
 
     else:
-        print "[Sb_limits] Erorr in case selection"
-        print "xi=", xi
-        print "xi(Stmin)=", xi_low
-        print "xi(Stmax)=", xi_up
-        print "Stmin=", St_min
-        print "Stmax", St_max
-        print "J=", J
-        print "L=", (q/(1.+q)**2)*(r*M**3)**.5
-        print "r=", r
+        print("[Sb_limits] Erorr in case selection")
+        print("xi=", xi)
+        print("xi(Stmin)=", xi_low)
+        print("xi(Stmax)=", xi_up)
+        print("Stmin=", St_min)
+        print("Stmax", St_max)
+        print("J=", J)
+        print("L=", (q/(1.+q)**2)*(r*M**3)**.5)
+        print("r=", r)
         assert False, "[Sb_limits] Erorr in case selection"
 
     btol=1e-8 # Never go to close to the actual limits, because of numerical stabilty
@@ -976,7 +980,7 @@ def Sb_limits(xi,J,q,S1,S2,r):
     Sb_max-=btol
 
     if whereareyou:
-        print "[Sb_limits] Results:", Sb_min,Sb_max
+        print("[Sb_limits] Results:", Sb_min,Sb_max)
 
     if Sb_min>Sb_max: # This may happen (numerically) if they're too close to each other. Assume they're the same.
         return np.mean([Sb_min,Sb_max]), np.mean([Sb_min,Sb_max])
@@ -1024,7 +1028,7 @@ def parametric_angles(S,J,xi,q,S1,S2,r):
     global flags_q1
     if q==1:
         if flags_q1[0]==False:
-            print "[parametric_angles] Warning q=1: input here is cos(varphi), not S."
+            print("[parametric_angles] Warning q=1: input here is cos(varphi), not S.")
             flags_q1[0]=True # Suppress future warnings
         cosvarphi=S # The input variable is actually cos(varphi)
         S=(J**2-L**2-xi*L*M**2)**.5
@@ -1089,7 +1093,7 @@ def from_the_angles(theta1,theta2,deltaphi,q,S1,S2,r):
     global flags_q1
     if q==1:
         if flags_q1[1]==False:
-            print "[from_the_angles] Warning q=1: output here is cos(varphi), not S."
+            print("[from_the_angles] Warning q=1: output here is cos(varphi), not S.")
             flags_q1[1]=True # Suppress future warnings
         xi = (2/M**2)*(S1 *np.cos(theta1)+S2*np.cos(theta2))
         Ssq = S1**2 + S2**2 +2*S1*S2*(np.cos(theta1)*np.cos(theta2)+np.sin(theta1)*np.sin(theta2)*np.cos(deltaphi))
@@ -1241,7 +1245,7 @@ def xi_allowed(J,q,S1,S2,r, more=False,verbose=False):
             xi_up =xi_plus(S_xiup,J,q,S1,S2,r)
 
     if verbose:
-        print "[xi_allowed] xi_low", xi_low, " xi_up=", xi_up
+        print("[xi_allowed] xi_low", xi_low, " xi_up=", xi_up)
     if more: # Return the S values as well
         return xi_low, xi_up, S_xilow, S_xiup
     else:
@@ -1335,8 +1339,8 @@ def resonant_finder(xi,q,S1,S2,r, more=False):
             theta1_dp180,theta2_dp180,deltaphi_dp180,dummy = parametric_angles(S_dp180,J_dp180,xi,q,S1,S2,r)
 
     if False: # Sanity check.
-        print "DeltaPhi=0?", deltaphi_dp0
-        print "DeltaPhi=pi?", deltaphi_dp180
+        print("DeltaPhi=0?", deltaphi_dp0)
+        print("DeltaPhi=pi?", deltaphi_dp180)
 
     if more: # return everything you got
         return J_dp0, S_dp0, theta1_dp0, theta2_dp0, J_dp180, S_dp180, theta1_dp180, theta2_dp180
@@ -1514,7 +1518,7 @@ def updown(q,S1,S2):
     '''
 
     if q==1:
-        print "[updown] Warning: up-down is always stable for q=1. Retuning Nones."
+        print("[updown] Warning: up-down is always stable for q=1. Retuning Nones.")
         return None, None
 
     r_udp=((1.+q)**2 *((q*S1)**0.5 + S2**0.5)**2/((1.-q)*q))**2
@@ -1640,22 +1644,22 @@ def phase_checker(q,S1,S2,r,verbose=False):
 
     if L > S1 + S2:
         if verbose:
-            print "L > S1 + S2 : 3"
+            print("L > S1 + S2 : 3")
         phases=[3]
 
     elif (S1 + S2 > L and L > max(S1, S2)):
         if verbose:
-            print "S1 + S2 > L > max(S1, S2) : 3,1"
+            print("S1 + S2 > L > max(S1, S2) : 3,1")
         phases=[3,1]
 
     elif (max(S1,S2) > L and  L>np.abs(S1-S2)):
         if verbose:
-            print "max(S1,S2) > L > |S1-S2| : 3,2,1"
+            print("max(S1,S2) > L > |S1-S2| : 3,2,1")
         phases=[3,2,1]
 
     elif np.abs(S1-S2) > L:
         if verbose:
-            print "|S1 - S2| > L : 3,2"
+            print("|S1 - S2| > L : 3,2")
         phases=[3,2]
 
     else:
@@ -1715,7 +1719,7 @@ def phase_xi(J,q,S1,S2,r):
 
     # The morphology at xi_max must be librating about pi. The morphology at xi_min can't be circulating.  Check if, because of degeneracies and numerical issues, a different morphology is be detected...
     if morph_ximax!=1 or morph_ximin==0:
-        print "[phase_xi] I think this should never ever happen. morph_ximax=",morph_ximax," morph_ximin=",morph_ximin
+        print("[phase_xi] I think this should never ever happen. morph_ximax=",morph_ximax," morph_ximin=",morph_ximin)
         if morph_ximin==-1:
             phase=3.
             xi_transit_up=xi_plus(St_min,J,q,S1,S2,r)+1e-9
@@ -1778,7 +1782,7 @@ def phase_xi(J,q,S1,S2,r):
                 xi_transit_up=xi_max
 
     if phase not in phase_checker(q,S1,S2,r):
-        print "[phase_xi] Warning: detected phases not allowed by geometry!"
+        print("[phase_xi] Warning: detected phases not allowed by geometry!")
 
     return phase, xi_transit_low,xi_transit_up
 
@@ -1820,7 +1824,7 @@ def Jframe_projection(xi,S,J,q,S1,S2,r):
 
     if q==1:
         if flags_q1[2]==False:
-            print "[Jframe_projection] Warning q=1: input here is cos(varphi), not S."
+            print("[Jframe_projection] Warning q=1: input here is cos(varphi), not S.")
             flags_q1[2]=True
         varphi=np.arccos(S)
         S=np.sqrt(J**2-L**2-xi*L*M**2)
@@ -1860,12 +1864,12 @@ def Jframe_projection(xi,S,J,q,S1,S2,r):
     Svec= S1vec+S2vec
 
     if False: #Sanity check. These sets of numbers should really be the same
-        print "[Jframe_projection] Check varphi", np.cos(varphi), np.sin(varphi)
-        print "[Jframe_projection] Check J norm", np.linalg.norm(Jvec), J
-        print "[Jframe_projection] Check norm", np.linalg.norm(Lvec), L
-        print "[Jframe_projection] Check norm", np.linalg.norm(S1vec), S1
-        print "[Jframe_projection] Check norm", np.linalg.norm(S2vec), S2
-        print "[Jframe_projection] Check norm", np.linalg.norm(Svec), S
+        print("[Jframe_projection] Check varphi", np.cos(varphi), np.sin(varphi))
+        print("[Jframe_projection] Check J norm", np.linalg.norm(Jvec), J)
+        print("[Jframe_projection] Check norm", np.linalg.norm(Lvec), L)
+        print("[Jframe_projection] Check norm", np.linalg.norm(S1vec), S1)
+        print("[Jframe_projection] Check norm", np.linalg.norm(S2vec), S2)
+        print("[Jframe_projection] Check norm", np.linalg.norm(Svec), S)
 
     return Jvec,Lvec,S1vec,S2vec,Svec
 
@@ -1952,7 +1956,7 @@ def dSdt(S,xi,J,q,S1,S2,r,sign=1.):
 
     if q==1:
         if flags_q1[3]==False:
-            print "[dSdt] Warning q=1: input here is cos(varphi), not S; now computing d(cos(varphi))/dt "
+            print("[dSdt] Warning q=1: input here is cos(varphi), not S; now computing d(cos(varphi))/dt ")
             flags_q1[3]=True
 
         cosvarphi = S # The input variable is actually cos(varphi)
@@ -1960,7 +1964,7 @@ def dSdt(S,xi,J,q,S1,S2,r,sign=1.):
         S_min,S_max=St_limits(J,q,S1,S2,r)
 
         if np.abs(S-S_min)<1e-8 or np.abs(S-S_max)<1e-8:
-            print "[dSdt] Warning: you are at resonance, varphi is ill-defined here."
+            print("[dSdt] Warning: you are at resonance, varphi is ill-defined here.")
             return 0.
 
         # Compute d(cos(varphi))/dt
@@ -2062,14 +2066,14 @@ def t_of_S( S_initial,S_final ,Sb_min,Sb_max ,xi,J,q,S1,S2,r, t_initial=0, sign=
     global flags_q1
     if q==1:
         if flags_q1[4]==False:
-            print "[t_of_S] Warning q=1: input here is cos(varphi) not S; now computing t( cos(varphi) )"
+            print("[t_of_S] Warning q=1: input here is cos(varphi) not S; now computing t( cos(varphi) )")
             flags_q1[4]=True
 
         L=(q/(1.+q)**2)*(r*M**3)**.5
         S = np.sqrt(J**2-L**2-xi*L*M**2)
         S_min,S_max=St_limits(J,q,S1,S2,r)
         if np.abs(S-S_min)<1e-8 or np.abs(S-S_max)<1e-8:
-            print "[t_of_S] Warning: you are at resonance, varphi is ill defined here."
+            print("[t_of_S] Warning: you are at resonance, varphi is ill defined here.")
             return 0.
         elif min(S_initial,S_final) < -1 or max(S_initial,S_final) > 1:
             assert False, "[t_of_S] Error. You're trying to integrate over more than one (half)period"
@@ -2124,7 +2128,7 @@ def S_of_t(t, Sb_min,Sb_max,xi,J,q,S1,S2,r):
     global flags_q1
     if q==1:
         if flags_q1[5]==False:
-            print "[S_of_t] Warning q=1: output here is cos(varphi) not S; now computing cos(varphi)(t) )"
+            print("[S_of_t] Warning q=1: output here is cos(varphi) not S; now computing cos(varphi)(t) )")
             flags_q1[5]=True
 
         L=(q/(1.+q)**2)*(r*M**3)**.5
@@ -2132,7 +2136,7 @@ def S_of_t(t, Sb_min,Sb_max,xi,J,q,S1,S2,r):
         S_min,S_max=St_limits(J,q,S1,S2,r)
 
         if np.abs(S-S_min)<1e-8 or np.abs(S-S_max)<1e-8:
-            print "[S_of_t] Warning: you are at resonance, varphi is ill defined here."
+            print("[S_of_t] Warning: you are at resonance, varphi is ill defined here.")
             return 0.
         elif t < 0 or t > tau/2.:
             assert False, "[S_of_t] Error. You're trying to integrate over more than one (half)period"
@@ -2212,7 +2216,7 @@ def OmegazdtdS(S,xi,J,q,S1,S2,r,sign=1.):
     global flags_q1
     if q==1:
         if flags_q1[6]==False:
-            print "[OmegazdtdS] Warning q=1: input here is cos(varphi), not S; now computing Omegaz * dt / d(cos(varphi))"
+            print("[OmegazdtdS] Warning q=1: input here is cos(varphi), not S; now computing Omegaz * dt / d(cos(varphi))")
             flags_q1[6]=True
         cosvarphi=S # The input variable is actually cos(varphi)
         L=(q/(1.+q)**2)*(r*M**3)**.5
@@ -2261,7 +2265,7 @@ def alpha_of_S( S_initial,S_final ,Sb_min,Sb_max ,xi,J,q,S1,S2,r, alpha_initial=
     global flags_q1
     if q==1:
         if flags_q1[7]==False:
-            print "[alpha_of_S] Warning q=1: input here is cos(varphi), not S; now computing alpha(cosvarphi)"
+            print("[alpha_of_S] Warning q=1: input here is cos(varphi), not S; now computing alpha(cosvarphi)")
             flags_q1[7]=True
 
         L=(q/(1.+q)**2)*(r*M**3)**.5
@@ -2269,7 +2273,7 @@ def alpha_of_S( S_initial,S_final ,Sb_min,Sb_max ,xi,J,q,S1,S2,r, alpha_initial=
         S_min,S_max=St_limits(J,q,S1,S2,r)
 
         if np.abs(S-S_min)<1e-8 or np.abs(S-S_max)<1e-8:
-            print "[alpha_of_S] Warning: you are at resonance, varphi is ill defined here."
+            print("[alpha_of_S] Warning: you are at resonance, varphi is ill defined here.")
             return 0.
         elif min(S_initial,S_final) < -1 or max(S_initial,S_final) > 1:
             assert False, "[alpha_of_S] Error. You're trying to integrate over more than one (half)period"
@@ -2361,7 +2365,7 @@ def samplingS(xi,J,q,S1,S2,r):
     global flags_q1
     if q==1:
         if flags_q1[8]==False:
-            print "[samplingS] Warning q=1: sampling is cos(varphi), not S"
+            print("[samplingS] Warning q=1: sampling is cos(varphi), not S")
             flags_q1[8]=True
 
         # If q=1, the limits must be specified in cos(varphi)
@@ -2521,7 +2525,7 @@ def Sb_limits_comp(xi,kappa,q,S1,S2,u):
     if q==1:
         if u==0:
             if flags_q1[9]==False:
-                print "[Sb_limits_comp] Warning q=1,u=0: input for kappa means S"
+                print("[Sb_limits_comp] Warning q=1,u=0: input for kappa means S")
                 flags_q1[9]=True
             Sb_both=kappa
         else:
@@ -2539,14 +2543,14 @@ def Sb_limits_comp(xi,kappa,q,S1,S2,u):
     if xi > xi_low and xi > xi_up:
 
         if whereareyou:
-            print "[Sb_limits_comp] Both roots on xi_plus"
+            print("[Sb_limits_comp] Both roots on xi_plus")
 
         resmax= sp.optimize.fminbound(lambda S: -1.*xi_plus_comp(S,kappa,q,S1,S2,u), St_min, St_max,full_output=1)
         S_up=resmax[0]
         xi_max=-1.*resmax[1]
         if xi_max<xi: #Braket failed!
-            print "[Sb_limits_comp] Braket failed on xi_plus at u="+str(u)+". Assume Sb_min=Sb_max"
-            #print  xi_plus(S_up,J,q,S1,S2,r), xi
+            print("[Sb_limits_comp] Braket failed on xi_plus at u="+str(u)+". Assume Sb_min=Sb_max")
+            #print( xi_plus(S_up,J,q,S1,S2,r), xi
             Sb_min=S_up
             Sb_max=S_up
         else: #Braket succeeded!
@@ -2558,14 +2562,14 @@ def Sb_limits_comp(xi,kappa,q,S1,S2,u):
     elif xi < xi_low and xi < xi_up:
 
         if whereareyou:
-            print "[Sb_limits_comp] Both roots on xi_minus"
+            print("[Sb_limits_comp] Both roots on xi_minus")
 
         resmin= sp.optimize.fminbound(lambda S: xi_minus_comp(S,kappa,q,S1,S2,u), St_min, St_max,full_output=1)
         S_low=resmin[0]
         xi_min=resmin[1]
 
         if xi_min>xi: #Braket failed!
-            print "[Sb_limits_comp] Braket failed on xi_minus at u="+str(u)+". Assume Sb_min=Sb_max"
+            print("[Sb_limits_comp] Braket failed on xi_minus at u="+str(u)+". Assume Sb_min=Sb_max")
             Sb_min=S_low
             Sb_max=S_low
         else: #Braket succeeded!
@@ -2576,27 +2580,27 @@ def Sb_limits_comp(xi,kappa,q,S1,S2,u):
     elif xi >= xi_low and xi <= xi_up:
 
         if whereareyou:
-            print "[Sb_limits_comp] Sb_min on xi_plus, Sb_max on xi_minus"
+            print("[Sb_limits_comp] Sb_min on xi_plus, Sb_max on xi_minus")
 
         Sb_min= sp.optimize.brentq(lambda S: xi_plus_comp(S,kappa,q,S1,S2,u)-xi, St_min, St_max)
         Sb_max= sp.optimize.brentq(lambda S: xi_minus_comp(S,kappa,q,S1,S2,u)-xi, St_min, St_max)
     elif xi <= xi_low and xi >= xi_up:
 
         if whereareyou:
-            print "[Sb_limits_comp] Sb_min on xi_minus, Sb_max on xi_plus"
+            print("[Sb_limits_comp] Sb_min on xi_minus, Sb_max on xi_plus")
 
         Sb_min= sp.optimize.brentq(lambda S: xi_minus_comp(S,kappa,q,S1,S2,u)-xi, St_min, St_max)
         Sb_max= sp.optimize.brentq(lambda S: xi_plus_comp(S,kappa,q,S1,S2,u)-xi, St_min, St_max)
 
     else:
-        print "[Sb_limits_comp] Erorr in case selection"
-        print "xi=", xi
-        print "xi(stmin)=", xi_low
-        print "xi(stmax)=", xi_up
-        print "Stmin=", St_min
-        print "Stmax", St_max
-        print "kappa=", kappa
-        print "u=", u
+        print("[Sb_limits_comp] Erorr in case selection")
+        print("xi=", xi)
+        print("xi(stmin)=", xi_low)
+        print("xi(stmax)=", xi_up)
+        print("Stmin=", St_min)
+        print("Stmax", St_max)
+        print("kappa=", kappa)
+        print("u=", u)
         assert False, "[Sb_limits_comp] Erorr in case selection"
 
     btol=1e-8 # Never go to close to the actual limits, because everything blows up there
@@ -2604,7 +2608,7 @@ def Sb_limits_comp(xi,kappa,q,S1,S2,u):
     Sb_max-=btol
 
     if whereareyou:
-        print "[Sb_limits_comp] Results:", Sb_min,Sb_max
+        print("[Sb_limits_comp] Results:", Sb_min,Sb_max)
 
 
     if Sb_min>Sb_max: # This may happen (numerically) if they're too close to each other. Assume they're the same.
@@ -2706,13 +2710,13 @@ def dkappadu(kappa,u,xi,q,S1,S2):
 
     dkappadu_debug=False #Debug option
     if dkappadu_debug:
-        print "[dkappadu] ODE int: u="+str(u)+"\t\tkappa="+str(float(kappa))
+        print("[dkappadu] ODE int: u="+str(u)+"\t\tkappa="+str(float(kappa)))
 
     Sb_min,Sb_max = Sb_limits_comp(xi,kappa,q,S1,S2,u)
 
     if np.abs(Sb_min-Sb_max)<1e-8:
         if dkappadu_debug:
-            print "[dkappadu] Warning. Applyting analytical approximation. u=",u
+            print("[dkappadu] Warning. Applyting analytical approximation. u=",u)
         return (np.mean([Sb_min,Sb_max]))**2
     else:
         up=sp.integrate.quad(S3sines_comp, Sb_min, Sb_max, args=(xi,kappa,q,S1,S2,u), full_output=1)
@@ -2874,8 +2878,8 @@ def Jofr_checkpoint(xi,J_initial,r_vals,q,S1,S2):
     savename= storedir+"/evJ_"+'_'.join([str(x) for x in (xi,J_initial,max(r_vals),min(r_vals),len(r_vals),q,S1,S2)])+".dat"
 
     if not os.path.isfile(savename):
-        print "[evolve_J] Transferring binary. Output:", savename
-        outfilesave = open(savename,"w",0)
+        print("[evolve_J] Transferring binary. Output:", savename)
+        outfilesave = open(savename,"wb",0)
 
         J_vals= Jofr(xi,J_initial,r_vals,q,S1,S2)
 
@@ -2884,7 +2888,7 @@ def Jofr_checkpoint(xi,J_initial,r_vals,q,S1,S2):
         outfilesave.close()
 
     #else:
-    #    print "[evolve_J] Skipping. Output:", savename
+    #    print("[evolve_J] Skipping. Output:", savename
 
     return savename
 
@@ -2938,7 +2942,7 @@ def evolve_J(xi_vals,J_vals,r_vals,q_vals,S1_vals,S2_vals):
         CPUs
     except:
         CPUs=0
-        print "[evolve_J] Default parallel computation"
+        print("[evolve_J] Default parallel computation")
     # Parallelization.
     if CPUs==0: # Run on all cpus on the current machine! (default option)
         filelist=parmap.starmap(Jofr_checkpoint, zip(xi_vals,J_vals, [r_vals for i in range(len(q_vals))],q_vals,S1_vals,S2_vals), pm_parallel=True)
@@ -2949,7 +2953,7 @@ def evolve_J(xi_vals,J_vals,r_vals,q_vals,S1_vals,S2_vals):
 
     J_fvals=[]
     for index, file in enumerate(filelist):
-        print "[evolve_J] Reading:", index, file
+        print("[evolve_J] Reading:", index, file)
         dummy,J_f= np.loadtxt(file,unpack=True)
 
         J_fvals.append(J_f)
@@ -2989,8 +2993,8 @@ def evolve_angles_single(theta1_i,theta2_i,deltaphi_i,r_vals,q,S1,S2):
     savename= storedir+"/eva_"+'_'.join([str(x) for x in (theta1_i,theta2_i,deltaphi_i,max(r_vals),min(r_vals),len(r_vals),q,S1,S2)])+".dat"
 
     if not os.path.isfile(savename):
-        print "[evolve_angles] Transferring binary. Output:", savename
-        outfilesave = open(savename,"w",0)
+        print("[evolve_angles] Transferring binary. Output:", savename)
+        outfilesave = open(savename,"wb",0)
 
         # Step 1. Get xi and J for each intial angle. Forget S
         xi,J_i,dummy= from_the_angles(theta1_i,theta2_i,deltaphi_i,q,S1,S2,r_vals[0])
@@ -3010,7 +3014,7 @@ def evolve_angles_single(theta1_i,theta2_i,deltaphi_i,r_vals,q,S1,S2):
         outfilesave.close()
 
     #else:
-    #    print "[evolve_angles] Skipping. Output:", savename
+    #    print("[evolve_angles] Skipping. Output:", savename)
 
     return savename
 
@@ -3077,7 +3081,7 @@ def evolve_angles(theta1_vals,theta2_vals,deltaphi_vals,r_vals,q_vals,S1_vals,S2
         CPUs
     except:
         CPUs=0
-        print "[evolve_angles] Default parallel computation"
+        print("[evolve_angles] Default parallel computation")
 
     loopflag=True
     while loopflag: # Restart is some of the cores crashed. This happend if you run too many binaries on too many different machines. Nevermind, trash the file and do it again.
@@ -3095,10 +3099,10 @@ def evolve_angles(theta1_vals,theta2_vals,deltaphi_vals,r_vals,q_vals,S1_vals,S2
         theta2_fvals=[]
         deltaphi_fvals=[]
         for index, file in enumerate(filelist):
-            print "[evolve_angles] Reading:", index, file
+            print("[evolve_angles] Reading:", index, file)
             numlines=sum(1 for line in open(file))
             if numlines!=0 and numlines!=len(r_vals): # Restart if core(s) crashed
-                print "[evolve_angles] Error on file", file,". Jobs are being restarted!"
+                print("[evolve_angles] Error on file", file,". Jobs are being restarted!")
                 os.system("rm "+file)
                 loopflag=True
 
@@ -3160,7 +3164,7 @@ def Jofr_infinity(xi,kappa_inf,r_vals,q,S1,S2):
     global flags_q1
     if q==1:
         if flags_q1[10]==False:
-            print "[Jofr_infinity] Warning q=1: required intial condition is S, not kappa_inf."
+            print("[Jofr_infinity] Warning q=1: required intial condition is S, not kappa_inf.")
             flags_q1[10]=True # Suppress future warnings
         S=kappa_inf
         J_vals=[np.sqrt(L**2+S**2+xi*L*M**2) for L in L_vals]
@@ -3205,8 +3209,8 @@ def Jofr_infinity_checkpoint(xi,kappa_inf,r_vals,q,S1,S2):
     savename= storedir+"/evJinf_"+'_'.join([str(x) for x in (xi,kappa_inf,max(r_vals),min(r_vals),len(r_vals),q,S1,S2)])+".dat"
 
     if not os.path.isfile(savename):
-        print "[evolve_J_infinity] Transferring binary. Output:", savename
-        outfilesave = open(savename,"w",0)
+        print("[evolve_J_infinity] Transferring binary. Output:", savename)
+        outfilesave = open(savename,"wb",0)
 
         J_vals= Jofr_infinity(xi,kappa_inf,r_vals,q,S1,S2)
 
@@ -3215,7 +3219,7 @@ def Jofr_infinity_checkpoint(xi,kappa_inf,r_vals,q,S1,S2):
         outfilesave.close()
 
     #else:
-    #    print "[evolve_J_infinity] Skipping. Output:", savename
+    #    print("[evolve_J_infinity] Skipping. Output:", savename
 
     return savename
 
@@ -3269,7 +3273,7 @@ def evolve_J_infinity(xi_vals,kappainf_vals,r_vals,q_vals,S1_vals,S2_vals):
         CPUs
     except:
         CPUs=0
-        print "[evolve_J_infinity] Default parallel computation"
+        print("[evolve_J_infinity] Default parallel computation")
     # Parallelization
     if CPUs==0: # Run on all cpus on the current machine! (default option)
         filelist=parmap.starmap(Jofr_infinity_checkpoint, zip(xi_vals,kappainf_vals,[r_vals for i in range(len(q_vals))],q_vals,S1_vals,S2_vals),pm_parallel=True)
@@ -3280,7 +3284,7 @@ def evolve_J_infinity(xi_vals,kappainf_vals,r_vals,q_vals,S1_vals,S2_vals):
 
     J_fvals=[]
     for index, file in enumerate(filelist):
-        print "[evolve_J_infinity] Reading:", index, file
+        print("[evolve_J_infinity] Reading:", index, file)
         dummy,J_f= np.loadtxt(file,unpack=True)
 
         J_fvals.append(J_f)
@@ -3333,7 +3337,7 @@ def kappa_backwards(xi,J,r,q,S1,S2):
     global flags_q1
     if q==1:
         if flags_q1[11]==False:
-            print "[kappa_backwards] Warning q=1: sensible output is S, not kappa_inf."
+            print("[kappa_backwards] Warning q=1: sensible output is S, not kappa_inf.")
             flags_q1[11]=True # Suppress future warnings
         S=np.sqrt(J**2-L**2-xi*L*M**2)
         return S
@@ -3375,15 +3379,15 @@ def kappa_backwards_checkpoint(xi,J,r,q,S1,S2):
     savename= storedir+"/evback"+'_'.join([str(x) for x in (xi,J,r,q,S1,S2)])+".dat"
 
     if not os.path.isfile(savename):
-        print "[evolve_J_backwards] Transferring binary. Output:", savename
-        outfilesave = open(savename,"w",0)
+        print("[evolve_J_backwards] Transferring binary. Output:", savename)
+        outfilesave = open(savename,"wb",0)
 
         kappa_inf=kappa_backwards(xi,J,r,q,S1,S2)
         outfilesave.write(str(kappa_inf))
         outfilesave.close()
 
     #else:
-    #    print "[evolve_J_infinity] Skipping. Output:", savename
+    #    print("[evolve_J_infinity] Skipping. Output:", savename)
 
     return savename
 
@@ -3433,7 +3437,7 @@ def evolve_J_backwards(xi_vals,J_vals,r,q_vals,S1_vals,S2_vals):
         CPUs
     except:
         CPUs=0
-        print "[evolve_J_backwards] Default parallel computation"
+        print("[evolve_J_backwards] Default parallel computation")
     #Parallelization... python is cool indeed
     if CPUs==0: #Run on all cpus on the current machine! (default option)
         filelist=parmap.starmap(kappa_backwards_checkpoint, zip(xi_vals,J_vals,[r for i in range(len(q_vals))],q_vals,S1_vals,S2_vals),pm_parallel=True)
@@ -3444,7 +3448,7 @@ def evolve_J_backwards(xi_vals,J_vals,r,q_vals,S1_vals,S2_vals):
 
     kappainf_vals=[]
     for index, file in enumerate(filelist):
-        print "[evolve_J_backwards] Reading:", index, file
+        print("[evolve_J_backwards] Reading:", index, file)
         kappa_inf= np.loadtxt(file,unpack=True)
         kappainf_vals.append(kappa_inf)
 
@@ -3649,7 +3653,7 @@ def orbav_integrator(J,xi,S,r_vals,q,S1,S2,time=False):
     global flags_q1
     if q==1:
         if flags_q1[12]==False:
-            print "[orbav_integrator] Warning q=1: input here is cos(varphi), not S."
+            print("[orbav_integrator] Warning q=1: input here is cos(varphi), not S.")
             flags_q1[12]=True
 
     L_vals=[(q/(1.+q)**2)*(comp*M**3)**.5 for comp in r_vals]
@@ -3724,15 +3728,15 @@ def orbit_averaged_single(J,xi,S,r_vals,q,S1,S2):
     global flags_q1
     if q==1:
         if flags_q1[13]==False:
-            print "[orbit_averaged] Warning q=1: Input/output for S is actually cos(varphi)"
+            print("[orbit_averaged] Warning q=1: Input/output for S is actually cos(varphi)")
             flags_q1[13]=True
 
     os.system("mkdir -p "+storedir)
     savename= storedir+"/orbav_"+'_'.join([str(x) for x in (J,xi,S,max(r_vals),min(r_vals),len(r_vals),q,S1,S2)])+".dat"
 
     if not os.path.isfile(savename):
-        print "[orbit_averaged] Transferring binary. Output:", savename
-        outfilesave = open(savename,"w",0)
+        print("[orbit_averaged] Transferring binary. Output:", savename)
+        outfilesave = open(savename,"wb",0)
         Lhx_fvals,Lhy_fvals,Lhz_fvals,S1hx_fvals,S1hy_fvals,S1hz_fvals,S2hx_fvals,S2hy_fvals,S2hz_fvals = orbav_integrator(J,xi,S,r_vals,q,S1,S2)
 
         for r_f,Lhx,Lhy,Lhz,S1hx,S1hy,S1hz,S2hx,S2hy,S2hz in zip(r_vals,Lhx_fvals,Lhy_fvals,Lhz_fvals,S1hx_fvals,S1hy_fvals,S1hz_fvals,S2hx_fvals,S2hy_fvals,S2hz_fvals):
@@ -3754,7 +3758,7 @@ def orbit_averaged_single(J,xi,S,r_vals,q,S1,S2):
         outfilesave.close()
 
     #else:
-    #    print "[evolve_J_infinity] Skipping. Output:", savename
+    #    print("[evolve_J_infinity] Skipping. Output:", savename
 
     return savename
 
@@ -3813,7 +3817,7 @@ def orbit_averaged(J_vals,xi_vals,S_vals,r_vals,q_vals,S1_vals,S2_vals):
         CPUs
     except:
         CPUs=0
-        print "[orbit_averaged] Default parallel computation"
+        print("[orbit_averaged] Default parallel computation")
 
     # Parallelization
     if CPUs==0: # Run on all cpus on the current machine! (default option)
@@ -3827,7 +3831,7 @@ def orbit_averaged(J_vals,xi_vals,S_vals,r_vals,q_vals,S1_vals,S2_vals):
     S_fvals=[]
     xi_vals=[]
     for index, file in enumerate(filelist):
-        print "[orbit_averaged] Reading:", index, file
+        print("[orbit_averaged] Reading:", index, file)
         dummy,J_f,xi_f,S_f= np.loadtxt(file,unpack=True)
         J_fvals.append(J_f)
         xi_vals.append(xi_f)
@@ -3867,8 +3871,8 @@ def orbit_angles_single(theta1_i,theta2_i,deltaphi_i,r_vals,q,S1,S2):
     savename= storedir+"/orbang_"+'_'.join([str(x) for x in (theta1_i,theta2_i,deltaphi_i,max(r_vals),min(r_vals),len(r_vals),q,S1,S2)])+".dat"
 
     if not os.path.isfile(savename):
-        print "[orbit_angles] Transferring binary. Output:", savename
-        outfilesave = open(savename,"w",0)
+        print("[orbit_angles] Transferring binary. Output:", savename)
+        outfilesave = open(savename,"wb",0)
 
         # Step 1. Get xi and J for each intial angle. Keep S now
         xi_i,J_i,S_i= from_the_angles(theta1_i,theta2_i,deltaphi_i,q,S1,S2,r_vals[0])
@@ -3910,7 +3914,7 @@ def orbit_angles_single(theta1_i,theta2_i,deltaphi_i,r_vals,q,S1,S2):
         outfilesave.close()
 
     #else:
-    #    print "[evolve_angles] Skipping. Output:", savename
+    #    print("[evolve_angles] Skipping. Output:", savename
 
     return savename
 
@@ -3970,7 +3974,7 @@ def orbit_angles(theta1_vals,theta2_vals,deltaphi_vals,r_vals,q_vals,S1_vals,S2_
         CPUs
     except:
         CPUs=0
-        print "[orbit_angles] Default parallel computation"
+        print("[orbit_angles] Default parallel computation")
 
     loopflag=True
     while loopflag: # Restart is some of the cores crashed. This happend if you run too many things on too many different machines. Nevermind, trash the file and do it again.
@@ -3988,10 +3992,10 @@ def orbit_angles(theta1_vals,theta2_vals,deltaphi_vals,r_vals,q_vals,S1_vals,S2_
         theta2_fvals=[]
         deltaphi_fvals=[]
         for index, file in enumerate(filelist):
-            print "[orbit_angles] Reading:", index, file
+            print("[orbit_angles] Reading:", index, file)
             numlines=sum(1 for line in open(file))
             if numlines!=0 and numlines!=len(r_vals): # Restar if core(s) crashed
-                print "[orbit_angles] Error on file", file,". Jobs are being restarting!!!"
+                print("[orbit_angles] Error on file", file,". Jobs are being restarting!!!")
                 os.system("rm "+file)
                 loopflag=True
 
@@ -4039,8 +4043,8 @@ def orbit_vectors_single(Lxi,Lyi,Lzi,S1xi,S1yi,S1zi,S2xi,S2yi,S2zi,r_vals,q,time
     savename= storedir+"/orbvec_"+'_'.join([str(x) for x in (Lxi,Lyi,Lzi,S1xi,S1yi,S1zi,S2xi,S2yi,S2zi,max(r_vals),min(r_vals),len(r_vals),q)])+".dat"
 
     if not os.path.isfile(savename):
-        print "[orbit_vectors] Transferring binary. Output:", savename
-        outfilesave = open(savename,"w",0)
+        print("[orbit_vectors] Transferring binary. Output:", savename)
+        outfilesave = open(savename,"wb",0)
 
         v_vals=[(M/comp)**0.5 for comp in r_vals]
         Li=(Lxi**2 + Lyi**2 + Lzi**2)**0.5
@@ -4101,7 +4105,7 @@ def orbit_vectors_single(Lxi,Lyi,Lzi,S1xi,S1yi,S1zi,S2xi,S2yi,S2zi,r_vals,q,time
         outfilesave.close()
 
     #else:
-    #    print "[orbit_vectors] Skipping. Output:", savename
+    #    print("[orbit_vectors] Skipping. Output:", savename
 
     return savename
 
@@ -4176,7 +4180,7 @@ def orbit_vectors(Lxi_vals,Lyi_vals,Lzi_vals,S1xi_vals,S1yi_vals,S1zi_vals,S2xi_
         CPUs
     except:
         CPUs=0
-        print "[orbit_vectors] Default parallel computation"
+        print("[orbit_vectors] Default parallel computation")
 
     # Parallelization
     if CPUs==0: # Run on all cpus on the current machine! (default option)
@@ -4198,7 +4202,7 @@ def orbit_vectors(Lxi_vals,Lyi_vals,Lzi_vals,S1xi_vals,S1yi_vals,S1zi_vals,S2xi_
     if time:
         t_fvals=[]
     for index, file in enumerate(filelist):
-        print "[orbit_vectors] Reading:", index, file
+        print("[orbit_vectors] Reading:", index, file)
         if time:
             dummy,Lx,Ly,Lz,S1x,S1y,S1z,S2x,S2y,S2z,tf= np.loadtxt(file,unpack=True)
         else:
@@ -4253,15 +4257,15 @@ def hybrid_single(xi,kappa_inf,r_vals,q,S1,S2,r_t):
     global flags_q1
     if q==1:
         if flags_q1[14]==False:
-            print "[hybrid] Warning q=1: required intial condition is S, not kappa_inf."
+            print("[hybrid] Warning q=1: required intial condition is S, not kappa_inf.")
             flags_q1[14]=True # Suppress future warnings
 
     os.system("mkdir -p "+storedir)
     savename= storedir+"/hybrid_"+'_'.join([str(x) for x in (xi,kappa_inf,max(r_vals),min(r_vals),len(r_vals),q,S1,S2,r_t)])+".dat"
 
     if not os.path.isfile(savename):
-        print "[hybrid] Transferring binary. Output:", savename
-        outfilesave = open(savename,"w",0)
+        print("[hybrid] Transferring binary. Output:", savename)
+        outfilesave = open(savename,"wb",0)
 
         # Split the output separations: precession-average before r_t and orbit-average after it
         r_vals_pa=[r for r in r_vals if r>r_t]
@@ -4383,7 +4387,7 @@ def hybrid(xi_vals,kappainf_vals,r_vals,q_vals,S1_vals,S2_vals,r_t):
         CPUs
     except:
         CPUs=0
-        print "[hybrid] Default parallel computation"
+        print("[hybrid] Default parallel computation")
 
     loopflag=True
     while loopflag: # Restart is some of the cores crashed. This happend if you run too many things on too many different machines. Nevermind, trash the file and do it again.
@@ -4401,10 +4405,10 @@ def hybrid(xi_vals,kappainf_vals,r_vals,q_vals,S1_vals,S2_vals,r_t):
         theta2_fvals=[]
         deltaphi_fvals=[]
         for index, file in enumerate(filelist):
-            print "[hybrid] Reading:", index, file
+            print("[hybrid] Reading:", index, file)
             numlines=sum(1 for line in open(file))
             if numlines!=0 and numlines!=len(r_vals): # Restart if core(s) crashed
-                print "[hybrid] Error on file", file,". Jobs are being restarted!"
+                print("[hybrid] Error on file", file,". Jobs are being restarted!")
                 os.system("rm "+file)
                 loopflag=True
 
@@ -4540,7 +4544,7 @@ def finalspin(theta1,theta2,deltaPhi,q,S1,S2):
     smalll = 2.*pow(3.,1./2.) + t2*eta+t3*pow(eta,2.) + s4*np.dot(chit,chit)*pow(1.+q,4.)*pow(1+q*q,-2.) + (s5*eta+t0+2.)*chit_par*pow(1.+q,2)*pow(1.+q*q,-1)
     chifin=np.linalg.norm( chit+hatL*smalll*q/pow(1.+q,2.) )
     if chifin>1.: #Check on the final spin, as suggested by Emanuele
-        print "[finalspin] Warning: got chi>1, force chi=1"
+        print("[finalspin] Warning: got chi>1, force chi=1")
         chifin==1.
 
     return chifin
@@ -4655,7 +4659,7 @@ def finalkick(theta1,theta2,deltaPhi,q,S1,S2,maxkick=False,kms=False,more=False)
     vkick=np.linalg.norm([vm+vperp*np.cos(zeta),vperp*np.sin(zeta),vpar])
 
     if vkick>5000:
-        print "[finalkick] Warning; I got v_kick>5000km/s. This shouldn't be possibile"
+        print("[finalkick] Warning; I got v_kick>5000km/s. This shouldn't be possibile")
 
     if not kms: # divide by the speed of light in km/s
         c_kms=299792.458
